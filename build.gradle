@@ -1,0 +1,45 @@
+apply plugin: 'groovy'
+apply plugin: 'java'
+apply plugin: 'maven'
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+//    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.github.javaparser:javaparser-core:2.4.0'
+    compile 'org.ow2.asm:asm-all:5.1'
+}
+
+repositories {
+//    mavenCentral()
+    maven {
+        url project.MAVEN_URL
+    }
+}
+
+task groovydocJar(type: Jar, dependsOn: groovydoc) {
+    classifier = 'javadoc'
+    from 'build/docs/groovydoc'
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+artifacts {
+    archives jar
+    archives groovydocJar
+    archives sourcesJar
+}
+
+group='cn.hugoz.amc.plugin'
+version='1.0.0'
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: uri('../repo'))
+        }
+    }
+}
